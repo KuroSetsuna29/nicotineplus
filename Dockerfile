@@ -4,17 +4,16 @@ ENV LOGIN=$LOGIN
 ENV PASSW=$PASSW
 ENV DARKMODE=$DARKMODE
 
-RUN apt update
-RUN apt install -y software-properties-common
+RUN apt update \
+    && apt install -y software-properties-common \
+    && add-apt-repository ppa:nicotine-team/stable \
+    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 6CEB6050A30E5769 \
+    && apt update \
+    && apt install -y software-properties-common nginx nicotine tzdata dos2unix
 
-RUN add-apt-repository ppa:nicotine-team/stable
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 6CEB6050A30E5769
-RUN apt update
-RUN apt install -y nicotine
+ENV TZ="America/Toronto"
 
 COPY config /root/.config/default/config
-
-RUN apt install -y nginx
 COPY nginx.conf /etc/nginx/sites-enabled/default
 COPY favicon.svg /var/www
 
@@ -27,7 +26,8 @@ EXPOSE 8080
 # EXPOSE 2239
 
 COPY init.sh /init.sh
-RUN chmod +x /init.sh
+RUN dos2unix /init.sh \
+    && chmod +x /init.sh
 ENTRYPOINT ["/init.sh"]
 
 # Alternative for GTK4, which looks better because it uses DOM nodes for each GTK component instead of a Canvas element for each window.

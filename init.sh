@@ -1,9 +1,11 @@
 #!/bin/bash
 
 umask ${UMASK:-0000}
+PORT=${PORT:-8080}
 
 [[ ! -f /root/.config/nicotine/config ]] && cp /root/.config/default/config /root/.config/nicotine/config
 
+sed -i "s/listen   .*/listen   $PORT;/g" /etc/nginx/sites-enabled/default
 sed -i "s/login =.*/login = $LOGIN/g" /root/.config/nicotine/config
 sed -i "s/passw =.*/passw = $PASSW/g" /root/.config/nicotine/config
 
